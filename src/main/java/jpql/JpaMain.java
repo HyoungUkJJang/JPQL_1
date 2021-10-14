@@ -16,21 +16,45 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Member member = new Member();
-            member.setUsername("member1");
-            member.setAge(10);
-            em.persist(member);
 
-            em.flush();
-            em.clear();
+                Team team = new Team();
+                team.setName("teamA");
+                em.persist(team);
 
-//            List<Member> result = em.createQuery("select m from Member m", Member.class).getResultList();
-            List<Member> resultList = em.createQuery("select new jpql.Member(m.username, m.age) from Member m", Member.class).getResultList();
-            Member member1 = resultList.get(0);
-            System.out.println("member1.getUsername() = " + member1.getUsername());
-            System.out.println("member1.getAge() = " + member1.getAge());
+                Team team2 = new Team();
+                team2.setName("teamB");
+                em.persist(team2);
+
+                Team team3 = new Team();
+                team3.setName("teamC");
+                em.persist(team3);
+
+                Member member = new Member();
+                member.setUsername("member1");
+                member.setAge(100);
+                member.setTeam(team);
+                em.persist(member);
+
+                Member member2 = new Member();
+                member2.setUsername("member2");
+                member2.setAge(100);
+                member2.setTeam(team);
+                em.persist(member2);
+
+                Member member3 = new Member();
+                member3.setUsername("member3");
+                member3.setAge(100);
+                member3.setTeam(team2);
+                em.persist(member3);
+                
+                em.flush();
+                em.clear();
 
 
+            List<Member> resultList = em.createQuery("select m from Member m JOIN FETCH m.team ", Member.class).getResultList();
+            for (Member member1 : resultList) {
+                System.out.println("member1.getTeam().getName() = " + member1.getTeam().getName());
+            }
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
